@@ -6,7 +6,7 @@ from langchain.chains import RetrievalQA
 from langchain.document_loaders import TextLoader
 from langchain.indexes import VectorstoreIndexCreator
 
-openai_api_key = "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"
+openai_api_key = "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"
 llm = OpenAI(openai_api_key=openai_api_key)
 chat_model = ChatOpenAI(openai_api_key=openai_api_key, model_name="gpt-3.5-turbo")
 os.environ['OPENAI_API_KEY'] = openai_api_key
