@@ -7,8 +7,6 @@ from langchain.llms import ChatGLM
 from langchain import PromptTemplate, LLMChain
 from langchain.embeddings import HuggingFaceEmbeddings
 
-# openai_api_key = "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"
-# os.environ['OPENAI_API_KEY'] = openai_api_key
 
 def chatglm_llm():
     """
