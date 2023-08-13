@@ -73,8 +73,8 @@ def get_embeddings():
 
 def get_llm():
     # default endpoint_url for a local deployed ChatGLM api server
-    endpoint_url = "http://localhost:8000/"
-    # endpoint_url = "http://region-9.seetacloud.com:34302/"
+    # endpoint_url = "http://localhost:8000/"
+    endpoint_url = "http://region-9.seetacloud.com:34302/"
 
     llm = ChatGLM(
         endpoint_url=endpoint_url,
@@ -90,6 +90,6 @@ if __name__ == "__main__":
     # load_document("../doc/")
     start_time = time.time()
     print(f"开始: {start_time}")
-    answer = get_answer("美国总统有哪些指示")
+    answer = get_answer("美国面临哪些挑战，采取了哪些措施")
     print(f"答案: {answer}")
     print(f"函数 {get_answer.__name__} 的运行时间为: {time.time() - start_time} 秒")

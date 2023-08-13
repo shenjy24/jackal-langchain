@@ -1,11 +1,16 @@
 import time
+import timeit
 
+import openai
 from langchain import PromptTemplate, LLMChain
 from langchain.document_loaders import TextLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.llms import ChatGLM
-from transformers import AutoModel
+
+# default endpoint_url for a local deployed ChatGLM api server
+endpoint_url = "http://region-9.seetacloud.com:41927"
+# endpoint_url = "http://localhost:8000"
 
 
 def chatglm_llm():
@@ -13,8 +18,6 @@ def chatglm_llm():
     ChatGLM 大语言模型
     :return:
     """
-    # default endpoint_url for a local deployed ChatGLM api server
-    endpoint_url = "http://region-9.seetacloud.com:30446/"
 
     llm = ChatGLM(
         endpoint_url=endpoint_url,
@@ -27,9 +30,6 @@ def chatglm_llm():
 
 
 def test_chatglm(question):
-    # default endpoint_url for a local deployed ChatGLM api server
-    endpoint_url = "http://region-9.seetacloud.com:30446/"
-
     template = """{question}"""
     prompt = PromptTemplate(template=template, input_variables=["question"])
 
@@ -43,6 +43,21 @@ def test_chatglm(question):
 
     llm_chain = LLMChain(prompt=prompt, llm=llm)
     return llm_chain.run(question)
+
+
+def chatglm_openai(question):
+    openai.api_base = f"{endpoint_url}/v1"
+    print(openai.api_base)
+    openai.api_key = "none"
+    for chunk in openai.ChatCompletion.create(
+            model="chatglm2-6b",
+            messages=[
+                {"role": "user", "content": question}
+            ],
+            stream=True
+    ):
+        if hasattr(chunk.choices[0].delta, "content"):
+            print(chunk.choices[0].delta.content, end="", flush=True)
 
 
 def retriever(query, llm):
@@ -63,9 +78,10 @@ def retriever_openai(query):
 
 if __name__ == '__main__':
     start_time = time.time()
-    question = "Python入门"
+    q = "Python入门"
     # answer = retriever_openai(question)
     # answer = retriever(question, chatglm_llm())
-    answer = test_chatglm(question)
+    answer = test_chatglm(q)
+    # chatglm_openai(q)
     print(f"answer: {answer}")
     print(f"函数 {test_chatglm.__name__} 的运行时间为: {time.time() - start_time}")
