@@ -46,6 +46,9 @@ def get_answer(question):
 
 
 def load_document(directory):
+    """
+    加载目录下的文件，存入向量数据库
+    """
     # 加载目录下所有文件
     loader = DirectoryLoader(directory)
     # 将数据转成 document 对象，每个文件会作为一个 document
@@ -68,6 +71,9 @@ def get_split_docs(documents):
 
 
 def get_embeddings():
+    """
+    获取 Embeddings 模型
+    """
     return HuggingFaceEmbeddings()
 
 
