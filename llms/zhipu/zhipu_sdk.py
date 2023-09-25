@@ -1,6 +1,8 @@
+import os
+
 import zhipuai
 
-zhipuai.api_key = "db0fe343671af8239b93b5baf11ea729.yHLTj7SdtqaPAHGd"
+zhipuai.api_key = os.environ.get("ZHIPU_API_KEY")
 response = zhipuai.model_api.sse_invoke(
     model="chatglm_pro",
     prompt=[

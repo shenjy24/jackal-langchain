@@ -1,38 +1,24 @@
 import logging
-import time
 from typing import Any, List, Mapping, Optional
 
-import jwt
 import requests
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 
 from llms.zhipu import zhipu_api_key
+from llms.zhipu.zhipu_util import generate_token
 
 logger = logging.getLogger(__name__)
 
 
-def generate_token(apikey: str):
-    try:
-        id, secret = apikey.split(".")
-    except Exception as e:
-        raise Exception("invalid apikey", e)
-
-    payload = {
-        "api_key": id,
-        "exp": int(round(time.time() * 1000)) + 300 * 1000,
-        "timestamp": int(round(time.time() * 1000)),
-    }
-
-    return jwt.encode(
-        payload,
-        secret,
-        algorithm="HS256",
-        headers={"alg": "HS256", "sign_type": "SIGN"},
-    )
-
-
 class ZhiPu(LLM):
+    """
+    `ZhiPu` Chat large language models API.
+
+    To use, you should have the ``zhipu`` python package installed, and the
+    environment variable ``ZHIPU_API_KEY`` set with your API key.
+    """
+
     """Endpoint URL to use."""
     url: str = "https://open.bigmodel.cn/api/paas/v3/model-api/chatglm_pro/invoke"
     """Top P for nucleus sampling from 0 to 1"""

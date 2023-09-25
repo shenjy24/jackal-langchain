@@ -1,30 +1,8 @@
-import time
-import jwt
 import requests
 
+from llms.zhipu import zhipu_api_key
+from llms.zhipu.zhipu_util import generate_token
 from utils import generate_random_str
-
-api_key = "db0fe343671af8239b93b5baf11ea729.yHLTj7SdtqaPAHGd"
-
-
-def generate_token(apikey: str, exp_seconds: int):
-    try:
-        id, secret = apikey.split(".")
-    except Exception as e:
-        raise Exception("invalid apikey", e)
-
-    payload = {
-        "api_key": id,
-        "exp": int(round(time.time() * 1000)) + exp_seconds * 1000,
-        "timestamp": int(round(time.time() * 1000)),
-    }
-
-    return jwt.encode(
-        payload,
-        secret,
-        algorithm="HS256",
-        headers={"alg": "HS256", "sign_type": "SIGN"},
-    )
 
 
 def invoke():
@@ -41,7 +19,7 @@ def invoke():
         # "top_p": 0.7,        # 用温度取样的另一种方法，称为核取样. 取值范围是：(0.0, 1.0) 开区间，默认值为 0.7. 不要同时调整两个参数
         "request_id": generate_random_str(),
     }
-    headers = {"Authorization": generate_token(api_key, 300)}
+    headers = {"Authorization": generate_token(zhipu_api_key)}
     response = requests.post(url, json=data, headers=headers)
 
     # 检查响应状态码
