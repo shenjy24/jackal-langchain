@@ -10,6 +10,8 @@ from langchain.llms import ChatGLM
 from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter
 from langchain.vectorstores import Chroma
 
+from utils import get_chroma_dir
+
 
 def build_knowledge_base():
     loaders = [
@@ -81,7 +83,7 @@ def load_single_document(doc):
     # 初始化 embeddings 对象
     embeddings = get_embeddings()
     # 持久化数据
-    docsearch = Chroma.from_documents(split_docs, embeddings, persist_directory="chroma")
+    docsearch = Chroma.from_documents(split_docs, embeddings, persist_directory=get_chroma_dir())
     docsearch.persist()
 
 

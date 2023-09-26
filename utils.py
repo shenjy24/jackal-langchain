@@ -2,6 +2,10 @@ import uuid
 import datetime
 
 
+def get_chroma_dir():
+    return "./chroma"
+
+
 def generate_random_str():
     random_uuid = uuid.uuid4()
     filename = str(random_uuid).replace("-", "")
