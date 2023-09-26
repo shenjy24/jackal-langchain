@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 from langchain.callbacks import AsyncIteratorCallbackHandler
 
 from llms.knowledge_base import get_answer
+from llms.zhipu.zhipu_knowledge_base import get_zhipu_answer
 from llms.zhipu.zhipu_sdk import sdk_sse_invoke
 
 app = FastAPI()
@@ -50,6 +51,12 @@ async def answer(question):
 async def events(prompt: str):
     headers = {"Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache"}
     return StreamingResponse(event_stream(prompt), headers=headers)
+
+
+@app.get("/zhipu/{prompt}")
+async def events(prompt: str):
+    headers = {"Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache"}
+    return StreamingResponse(get_zhipu_answer(prompt), headers=headers)
 
 
 @app.get("/llm/{prompt}")
