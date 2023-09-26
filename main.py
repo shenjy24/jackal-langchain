@@ -1,31 +1,26 @@
-import os
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 
-from langchain.chat_models import ChatOpenAI
-from langchain.llms import OpenAI
-from langchain.chains import RetrievalQA
-from langchain.document_loaders import TextLoader
-from langchain.indexes import VectorstoreIndexCreator
+from llms.zhipu.zhipu_sdk import sdk_sse_invoke
 
-openai_api_key = "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"
-llm = OpenAI(openai_api_key=openai_api_key)
-chat_model = ChatOpenAI(openai_api_key=openai_api_key, model_name="gpt-3.5-turbo")
-os.environ['OPENAI_API_KEY'] = openai_api_key
+app = FastAPI()
 
 
-def retriever():
-    # 加载本地文件
-    loader = TextLoader('./doc/state_of_the_union.txt', encoding='utf8')
-    index = VectorstoreIndexCreator().from_loaders([loader])
-    query = "What did the president say about Ketanji Brown Jackson"
-    return index.query(query)
+def event_stream(prompt):
+    prompts = [{"role": "user", "content": f"{prompt}"}]
+    response = sdk_sse_invoke(prompts=prompts)  # Invoke SSE and get the response object
+    for event in response.events():
+        yield event.data
+        # time.sleep(1)  # Add a delay between events (for demonstration purposes)
 
 
-def test_llm(prompt):
-    print(llm.predict(prompt))
-    print(chat_model.predict(prompt))
+@app.get("/events/{prompt}")
+async def events(prompt: str):
+    headers = {"Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache"}
+    return StreamingResponse(event_stream(prompt), headers=headers)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    # test_llm('hi')
-    print(retriever())
+if __name__ == "__main__":
+    # Start the FastAPI app
+    uvicorn.run(app, host="127.0.0.1", port=8000)

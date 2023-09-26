@@ -2,7 +2,7 @@ import requests
 from zhipuai.utils.sse_client import SSEClient
 
 from llms.zhipu import zhipu_api_key
-from llms.zhipu.zhipu_util import generate_token
+from llms.zhipu.zhipu_util import generate_token, sse_out
 from utils import generate_random_str
 
 
@@ -23,19 +23,6 @@ def sse_invoke():
     headers = {"Authorization": generate_token(zhipu_api_key)}
     response = requests.post(url, json=data, headers=headers, stream=True)
     return SSEClient(response)
-
-
-def sse_out(response):
-    for event in response.events():
-        if event.event == "add":
-            print(event.data)
-        elif event.event == "error" or event.event == "interrupted":
-            print(event.data)
-        elif event.event == "finish":
-            print(event.data)
-            print(event.meta)
-        else:
-            print(event.data)
 
 
 if __name__ == '__main__':

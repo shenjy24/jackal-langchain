@@ -21,3 +21,19 @@ def generate_token(apikey: str):
         algorithm="HS256",
         headers={"alg": "HS256", "sign_type": "SIGN"},
     )
+
+
+def sse_out(response):
+    """
+    打印出SSE输出流数据
+    """
+    for event in response.events():
+        if event.event == "add":
+            print(event.data)
+        elif event.event == "error" or event.event == "interrupted":
+            print(event.data)
+        elif event.event == "finish":
+            print(event.data)
+            print(event.meta)
+        else:
+            print(event.data)
