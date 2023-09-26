@@ -45,6 +45,7 @@ class ZhiPu(LLM):
     def _call(
             self,
             prompt: str,
+            stop: Optional[List[str]] = None,
             run_manager: Optional[CallbackManagerForLLMRun] = None,
             **kwargs: Any,
     ) -> str:
@@ -54,13 +55,22 @@ class ZhiPu(LLM):
         # HTTP headers for authorization
         headers = {"Content-Type": "application/json", "Authorization": generate_token(zhipu_api_key)}
 
+        prompt_history = []
+        user_prompt = {"role": "user", "content": f"{prompt}"}
+        if self.with_history:
+            self.history.append(user_prompt)
+            prompt_history += self.history
+        else:
+            prompt_history.append(user_prompt)
+
         payload = {
-            "prompt": prompt,
+            "prompt": prompt_history,
             "top_p": self.top_p
         }
         payload.update(_model_kwargs)
         payload.update(kwargs)
 
+        print(f"zhipu payload: {payload}")
         logger.debug(f"zhipu payload: {payload}")
 
         # call api
