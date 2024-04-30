@@ -5,9 +5,9 @@
 import feedparser
 import gradio as gr
 import ollama
-from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
 from lxml import etree
 
 
@@ -35,9 +35,9 @@ def get_content(url):
 
 def create_docs_vector(docs):
     # 基于 embeddings，为 docs 创建向量
-    embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-m3", encode_kwargs={'normalize_embeddings': True})
-    vector_store = FAISS.from_documents(docs, embeddings)
-    return vector_store
+    embeddings = OllamaEmbeddings(model='llama3')
+    vectordb = Chroma.from_documents(documents=docs, embedding=embeddings, persist_directory="chroma")
+    return vectordb
 
 
 def rag_chain(question, vector_store, model='llama3', threshold=0.3):
